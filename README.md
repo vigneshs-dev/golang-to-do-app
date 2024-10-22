@@ -31,6 +31,28 @@ A modern, full-stack todo application built with Go (Fiber) + React + MongoDB
 
 ---
 
+## <p align="left"> 🏗️ Architecture </p>
+
+```mermaid
+graph TD
+  Client[React Frontend] -->|HTTP Requests| Backend[Go API]
+  Backend -->|CRUD Operations| Database[(MongoDB)]
+  Client -->|Static Assets| FrontendBuild[React Build]
+
+  subgraph "Frontend (React)"
+    Client
+    FrontendBuild
+  end
+
+  subgraph "Backend (Go)"
+    Backend
+  end
+
+  subgraph "Database"
+    Database[(MongoDB)]
+  end
+```
+
 ## ✨ Features
 
 - 📱 Responsive Design
