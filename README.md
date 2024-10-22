@@ -35,22 +35,69 @@ A modern, full-stack todo application built with Go (Fiber) + React + MongoDB
 
 ```mermaid
 graph TD
-  Client[React Frontend] -->|HTTP Requests| Backend[Go API]
-  Backend -->|CRUD Operations| Database[(MongoDB)]
-  Client -->|Static Assets| FrontendBuild[React Build]
+    subgraph Client["Frontend Client"]
+        UI[React UI]
+    end
 
-  subgraph "Frontend (React)"
-    Client
-    FrontendBuild
-  end
+    subgraph Server["Go Fiber Server (main.go)"]
+        Main[Main Function]
+        ENV[Load Environment]
+        DB[MongoDB Connection]
+        Router[Fiber Router]
+        
+        subgraph Endpoints["API Endpoints"]
+            GET[GET /api/todos]
+            POST[POST /api/todos]
+            PATCH[PATCH /api/todos/:id]
+            DELETE[DELETE /api/todos/:id]
+        end
+        
+        subgraph Handlers["Handler Functions"]
+            getTodos
+            createTodo
+            updateTodo
+            deleteTodo
+        end
+    end
 
-  subgraph "Backend (Go)"
-    Backend
-  end
+    subgraph Database["MongoDB Atlas"]
+        Collection["Collection: todos</br>Database: golang_db"]
+    end
 
-  subgraph "Database"
-    Database[(MongoDB)]
-  end
+    %% Main Application Flow
+    Main --> ENV
+    ENV --> DB
+    Main --> Router
+    Router --> Endpoints
+
+    %% Connect Endpoints to Handlers
+    GET --> getTodos
+    POST --> createTodo
+    PATCH --> updateTodo
+    DELETE --> deleteTodo
+
+    %% Connect Handlers to Database
+    getTodos --> Collection
+    createTodo --> Collection
+    updateTodo --> Collection
+    deleteTodo --> Collection
+
+    %% Client Interaction
+    UI <--> GET
+    UI <--> POST
+    UI <--> PATCH
+    UI <--> DELETE
+
+    %% Styling
+    classDef server fill:#f9f,stroke:#333,stroke-width:2px
+    classDef database fill:#b5d8ff,stroke:#333,stroke-width:2px
+    classDef client fill:#baffc9,stroke:#333,stroke-width:2px
+    classDef endpoint fill:#fff5ba,stroke:#333,stroke-width:2px
+    
+    class Server server
+    class Database database
+    class Client client
+    class GET,POST,PATCH,DELETE endpoint
 ```
 
 ## ✨ Features
