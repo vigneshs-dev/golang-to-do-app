@@ -1,0 +1,106 @@
+name: Pull Request Automation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Set up Node.js for frontend
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Install dependencies for frontend
+      - name: Install frontend dependencies
+        working-directory: ./client
+        run: npm install
+
+      # Run lint for frontend (React)
+      - name: Run frontend lint
+        working-directory: ./client
+        run: npm run lint
+
+      # Run frontend tests (React)
+      - name: Run frontend tests
+        working-directory: ./client
+        run: npm test
+
+      # Set up Go for backend
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+
+      # Install Go dependencies
+      - name: Install Go dependencies
+        run: go mod tidy
+
+      # Run Go tests
+      - name: Run Go tests
+        run: go test ./...
+
+  # Label pull requests automatically based on the PR content or description
+  add-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label PR based on content
+        if: contains(github.event.pull_request.body, '🐛')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: 'bug'
+
+      - name: Label PR based on content
+        if: contains(github.event.pull_request.body, '✨')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: 'feature'
+
+      - name: Label PR based on content
+        if: contains(github.event.pull_request.body, '💥')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: 'breaking-change'
+
+  # Post checklist as comment on the PR
+  post-checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post Checklist
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## 📝 Pull Request Checklist
+
+            - [ ] My code follows the style guidelines of this project
+            - [ ] I have performed a self-review of my code
+            - [ ] I have commented my code, particularly in hard-to-understand areas
+            - [ ] I have made corresponding changes to the documentation
+            - [ ] My changes generate no new warnings
+            - [ ] I have added tests that prove my fix is effective or that my feature works
+            - [ ] New and existing unit tests pass locally with my changes
+            - [ ] Any dependent changes have been merged and published
+            - [ ] I have updated the README if necessary
+
+  # Optional job to close the PR automatically if 'Closes #[issue_number]' is used
+  close-related-issue:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Close related issue
+        uses: peter-evans/close-issue@v2
+        with:
+          issue-number: ${{ github.event.pull_request.body }}
