@@ -1,0 +1,28 @@
+services:
+    backend:
+        container_name: go-server
+        build:
+            context: .
+            dockerfile: server/server.dockerfile
+        environment:
+            MONGODB_URI: <db_connection_string>
+            PORT: "5000"
+            ENV: development
+        ports:
+            - "5000:5000"
+
+        healthcheck:
+            interval: 2s
+            test: "exit 0"
+
+    frontend:
+        container_name: react-frontend
+        build:
+            context: .
+            dockerfile: client/client.dockerfile
+
+        ports:
+            - "5173:5173"
+        depends_on:
+            backend:
+                condition: service_healthy
