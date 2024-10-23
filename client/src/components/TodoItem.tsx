@@ -1,5 +1,5 @@
 import { Badge, Box, Flex, Spinner, Text } from "@chakra-ui/react";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaRegCircle,FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Todo } from "./TodoList";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -68,6 +68,7 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 				>
 					{todo.body}
 				</Text>
+				
 				{todo.completed && (
 					<Badge ml='1' colorScheme='green'>
 						Done
@@ -80,14 +81,18 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 				)}
 			</Flex>
 			<Flex gap={2} alignItems={"center"}>
-				<Box color={"green.500"} cursor={"pointer"} onClick={() => updateTodo()}>
-					{!isUpdating && <FaCheckCircle size={20} />}
+				<Box color={todo.completed? "green.500":"whiteAlpha.500"} cursor={"pointer"} onClick={() => updateTodo()}>
+					{!isUpdating && (todo.completed)?<FaCheckCircle size={20} />:<FaRegCircle size={20} />
+					
+					}
+		
 					{isUpdating && <Spinner size={"sm"} />}
 				</Box>
 				<Box color={"red.500"} cursor={"pointer"} onClick={() => deleteTodo()}>
 					{!isDeleting && <MdDelete size={25} />}
 					{isDeleting && <Spinner size={"sm"} />}
 				</Box>
+				
 			</Flex>
 		</Flex>
 	);
