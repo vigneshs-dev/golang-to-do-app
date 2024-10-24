@@ -45,6 +45,8 @@ jobs:
       # Step 5: Run Go Linter
       - name: Run GolangCI-Lint Check
         uses: golangci/golangci-lint-action@v6
+        with:
+          working-directory: ./server
 
       # Step 6: Build the Go application
       - name: Build Go Application
