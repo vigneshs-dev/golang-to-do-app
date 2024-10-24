@@ -2,18 +2,21 @@ name: CI Workflow
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    # branches:
+    #   - main
+    #   - dev
   pull_request:
-    branches:
-      - main
-      - dev
+    # branches:
+    #   - main
+    #   - dev
 jobs:
   # Job for building the backend (Go)
   backend:
     name: Build Backend (Go)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
 
     steps:
       # Step 1: Checkout the code
@@ -42,12 +45,10 @@ jobs:
       # Step 5: Install Go dependencies
       - name: Install Go Dependencies
         run: go mod tidy
-        working-directory: ./server
 
       # Step 6: Build the Go application
       - name: Build Go Application
         run: go build -o app ./main.go
-        working-directory: ./server
 
   # Job for building the frontend (React)
   frontend:
