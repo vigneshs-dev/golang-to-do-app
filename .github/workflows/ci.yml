@@ -38,13 +38,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      # Step 4: Run Go Linter
-      - name: Run GolangCI-Lint Check
-        uses: golangci/golangci-lint-action@v6
-
       # Step 5: Install Go dependencies
       - name: Install Go Dependencies
         run: go mod tidy
+        
+      # Step 4: Run Go Linter
+      - name: Run GolangCI-Lint Check
+        uses: golangci/golangci-lint-action@v6
 
       # Step 6: Build the Go application
       - name: Build Go Application
