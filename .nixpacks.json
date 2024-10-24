@@ -1,0 +1,20 @@
+{
+    "phases": {
+      "install": {
+        "cmds": [
+          "cd server", 
+          "go mod download"
+        ]
+      },
+      "build": {
+        "cmds": [
+          "cd server",
+          "go build -o app"
+        ]
+      },
+      "start": {
+        "cmd": "./server/app"
+      }
+    }
+  }
+  
